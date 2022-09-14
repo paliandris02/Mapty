@@ -9,6 +9,8 @@ const inputDistance = document.querySelector('.form__input--distance');
 const inputDuration = document.querySelector('.form__input--duration');
 const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
+const delete__confirmWindow = document.querySelector('.delete__confirm');
+const delete__Btns = document.querySelectorAll('.delete__options-btn');
 
 class Workout {
   date = new Date();
@@ -90,6 +92,7 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopUp.bind(this));
+    containerWorkouts.addEventListener('click', this._deleteWorkout.bind(this));
   }
 
   _getPosition() {
@@ -216,11 +219,19 @@ class App {
       .setPopupContent(`${workout.description}`)
       .openPopup();
   }
+  // _clearMarkers() {
+  //   var markerGroup = L.layerGroup().addTo(map);
+  //   markerGroup.clearLayers();
+  // }
   _renderWorkout(workout) {
     let html = `<li class="workout workout--${workout.type}" data-id="${
       workout.id
     }">
+    <div class="workout__header">
     <h2 class="workout__title">${workout.description}</h2>
+    <div class="workout__delete"><img class="trashcan" src="trashcan.png" /></div>
+    </div>
+    <div class="workout__details-container">
     <div class="workout__details">
       <span class="workout__icon">${
         workout.type === 'running' ? '🏃‍♂️' : '🚴‍♀️'
@@ -246,6 +257,7 @@ class App {
         <span class="workout__value">${workout.cadence}</span>
         <span class="workout__unit">spm</span>
       </div>
+      </div>
      </li>
   `;
     }
@@ -261,6 +273,7 @@ class App {
         <span class="workout__icon">⛰</span>
         <span class="workout__value">${workout.elevationGain}</span>
         <span class="workout__unit">m</span>
+      </div>
       </div>
     </li>
   `;
@@ -301,6 +314,33 @@ class App {
     localStorage.removeItem('workouts');
     location.reload();
   }
+  // _deleteWorkout(event) {
+  //   if (!event.target.classList.contains('trashcan')) return;
+  //   delete__confirmWindow.classList.remove('hidden');
+  //   delete__Btns.forEach(el => {
+  //     el.addEventListener('click', e => {
+  //       if (e.target.classList.contains('delete__yes')) {
+  //         const workoutEl = event.target.closest('.workout');
+  //         const workout = this.#workouts.find(
+  //           el => el.id === workoutEl.dataset.id
+  //         );
+  //         const index = this.#workouts.indexOf(workout);
+  //         this.#workouts.splice(index, 1);
+  //         this.#workouts.forEach(el => {
+  //           this._renderWorkout(el);
+  //         });
+  //         this._clearMarkers();
+  //         this.#workouts.forEach(el => {
+  //           this._renderWorkoutMarker(el);
+  //         });
+  //         delete__confirmWindow.classList.add('hidden');
+  //       }
+  //       if (e.target.classList.contains('delete__no')) {
+  //         delete__confirmWindow.classList.add('hidden');
+  //       }
+  //     });
+  //   });
+  // }
 }
 
 const app = new App();

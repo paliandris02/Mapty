@@ -73,9 +73,8 @@ a:visited {
   margin-bottom: 1.75rem;
   cursor: pointer;
 
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr 1fr;
-  gap: 0.75rem 1.5rem;
+  display: flex;
+  flex-direction: column;
 }
 .workout--running {
   border-left: 5px solid var(--color-brand--2);
@@ -217,4 +216,84 @@ a:visited {
 }
 .cycling-popup .leaflet-popup-content-wrapper {
   border-left: 5px solid var(--color-brand--1);
+}
+.workout__delete img {
+  width: 2.5vh;
+  height: 2.5vh;
+}
+.workout__header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+.workout__details-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+.delete__confirm {
+  position: fixed;
+  animation-name: fadeIn;
+  animation-duration: 0.5s;
+  display: flex;
+  width: 20vw;
+  height: 14vh;
+  left: calc(50% - 10vw);
+  top: calc(50% - 7vh);
+  z-index: 1000;
+  background-color: var(--color-brand--2);
+  color: var(--color-dark--1);
+  font-size: 2vh;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  flex-direction: column;
+  border: var(--color-dark--1) 4px solid;
+}
+.delete__confirm span {
+  background-color: var(--color-brand--1);
+  width: fit-content;
+  margin: 2vh;
+  border: var(--color-light--2) 2px solid;
+}
+.delete__options {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  width: 100%;
+}
+.delete__options-btn {
+  font-size: 2vh;
+  border: var(--color-dark--1) 2px solid;
+  padding: 0 2vw 0 2vw;
+  cursor: pointer;
+  margin-bottom: 2vh;
+  background-color: white;
+}
+.hidden {
+  display: none;
+  animation-name: fadeOut;
+  animation-duration: 0.5s;
+}
+.delete__yes:hover {
+  background-color: #e94654;
+  transition: all 0.5s;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
