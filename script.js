@@ -14,7 +14,7 @@ const delete__Btns = document.querySelectorAll('.delete__options-btn');
 
 class Workout {
   date = new Date();
-  id = (Date.now() + '').slice(-10);
+  id = (Date.now() + '').slice(-10) + Math.random() * 100000;
   clicks = 0;
 
   constructor(coords, distance, duration) {
@@ -278,7 +278,8 @@ class App {
     </li>
   `;
     }
-    form.insertAdjacentHTML('afterend', html);
+    const tempFormSelection = document.querySelector('.form');
+    tempFormSelection.insertAdjacentHTML('afterend', html);
   }
   _moveToPopUp(e) {
     const workoutEl = e.target.closest('.workout');
@@ -314,33 +315,69 @@ class App {
     localStorage.removeItem('workouts');
     location.reload();
   }
-  // _deleteWorkout(event) {
-  //   if (!event.target.classList.contains('trashcan')) return;
-  //   delete__confirmWindow.classList.remove('hidden');
-  //   delete__Btns.forEach(el => {
-  //     el.addEventListener('click', e => {
-  //       if (e.target.classList.contains('delete__yes')) {
-  //         const workoutEl = event.target.closest('.workout');
-  //         const workout = this.#workouts.find(
-  //           el => el.id === workoutEl.dataset.id
-  //         );
-  //         const index = this.#workouts.indexOf(workout);
-  //         this.#workouts.splice(index, 1);
-  //         this.#workouts.forEach(el => {
-  //           this._renderWorkout(el);
-  //         });
-  //         this._clearMarkers();
-  //         this.#workouts.forEach(el => {
-  //           this._renderWorkoutMarker(el);
-  //         });
-  //         delete__confirmWindow.classList.add('hidden');
-  //       }
-  //       if (e.target.classList.contains('delete__no')) {
-  //         delete__confirmWindow.classList.add('hidden');
-  //       }
-  //     });
-  //   });
-  // }
+  _deleteWorkout(event) {
+    if (!event.target.classList.contains('trashcan')) return;
+    delete__confirmWindow.classList.remove('hidden');
+    const workoutEl = event.target.closest('.workout');
+    delete__Btns.forEach(el => {
+      el.addEventListener('click', e => {
+        if (e.target.classList.contains('delete__yes')) {
+          containerWorkouts.innerHTML = `<form class="form hidden">
+          <div class="form__row">
+            <label class="form__label">Type</label>
+            <select class="form__input form__input--type">
+              <option value="running">Running</option>
+              <option value="cycling">Cycling</option>
+            </select>
+          </div>
+          <div class="form__row">
+            <label class="form__label">Distance</label>
+            <input class="form__input form__input--distance" placeholder="km" />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Duration</label>
+            <input
+              class="form__input form__input--duration"
+              placeholder="min"
+            />
+          </div>
+          <div class="form__row">
+            <label class="form__label">Cadence</label>
+            <input
+              class="form__input form__input--cadence"
+              placeholder="step/min"
+            />
+          </div>
+          <div class="form__row form__row--hidden">
+            <label class="form__label">Elev Gain</label>
+            <input
+              class="form__input form__input--elevation"
+              placeholder="meters"
+            />
+          </div>
+          <button class="form__btn">OK</button>
+        </form>`;
+          this.#workouts.find((el, i, array) => {
+            if (el.id === workoutEl.dataset.id) {
+              array.splice(i, 1);
+            }
+          });
+          console.log(this.#workouts);
+          //this._clearMarkers();
+
+          this.#workouts.forEach(el => {
+            this._renderWorkout(el);
+          });
+          delete__confirmWindow.classList.add('hidden');
+          return;
+        }
+        if (e.target.classList.contains('delete__no')) {
+          delete__confirmWindow.classList.add('hidden');
+          return;
+        }
+      });
+    });
+  }
 }
 
 const app = new App();
