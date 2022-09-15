@@ -1,5 +1,4 @@
 'use strict';
-
 // prettier-ignore
 
 const form = document.querySelector('.form');
@@ -11,10 +10,13 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const delete__confirmWindow = document.querySelector('.delete__confirm');
 const delete__Btns = document.querySelectorAll('.delete__options-btn');
+const uid = function () {
+  return Date.now().toString(36) + Math.random().toString(36).substr(2);
+};
 
 class Workout {
   date = new Date();
-  id = (Date.now() + '').slice(-10) + Math.random() * 100000;
+  id = uid();
   clicks = 0;
 
   constructor(coords, distance, duration) {
@@ -316,9 +318,9 @@ class App {
     location.reload();
   }
   _deleteWorkout(event) {
+    const workoutEl = event.target.closest('.workout');
     if (!event.target.classList.contains('trashcan')) return;
     delete__confirmWindow.classList.remove('hidden');
-    const workoutEl = event.target.closest('.workout');
     delete__Btns.forEach(el => {
       el.addEventListener('click', e => {
         if (e.target.classList.contains('delete__yes')) {
@@ -356,23 +358,33 @@ class App {
             />
           </div>
           <button class="form__btn">OK</button>
-        </form>`;
-          this.#workouts.find((el, i, array) => {
-            if (el.id === workoutEl.dataset.id) {
-              array.splice(i, 1);
+         </form>`;
+          let deleteIndex = -1;
+          for (let index = 0; index < this.#workouts.length; index++) {
+            if (this.#workouts[index].id === workoutEl.dataset.id) {
+              this.#workouts.splice(index, 1);
+              break;
             }
-          });
-          console.log(this.#workouts);
+          }
+          // this.#workouts.forEach((el, i) => {
+          //   if (el.id === workoutEl.dataset.id) {
+          //     deleteIndex = i;
+          //     console.log(deleteIndex);
+          //   }
+          // });
           //this._clearMarkers();
-
           this.#workouts.forEach(el => {
             this._renderWorkout(el);
+            //console.log(el);
           });
+
           delete__confirmWindow.classList.add('hidden');
+
           return;
         }
         if (e.target.classList.contains('delete__no')) {
           delete__confirmWindow.classList.add('hidden');
+
           return;
         }
       });
