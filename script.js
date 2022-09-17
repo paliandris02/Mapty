@@ -94,7 +94,10 @@ class App {
     form.addEventListener('submit', this._newWorkout.bind(this));
     inputType.addEventListener('change', this._toggleElevationField);
     containerWorkouts.addEventListener('click', this._moveToPopUp.bind(this));
-    containerWorkouts.addEventListener('click', this._deleteWorkout.bind(this));
+    containerWorkouts.addEventListener(
+      'click',
+      this._deleteWorkoutFromLocalStorage.bind(this)
+    );
   }
 
   _getPosition() {
@@ -196,6 +199,7 @@ class App {
 
     //add new object to workout array
     this.#workouts.push(workout);
+    this._setLocalStorage(workout);
 
     //render workout on map as marker
     this._renderWorkoutMarker(workout);
@@ -203,8 +207,7 @@ class App {
     this._renderWorkout(workout);
     // Hide form + Clear input fields
     this._hideForm();
-    //set local storage to all workouts
-    this._setLocalStorage();
+    //set local storage to workout
   }
   _renderWorkoutMarker(workout) {
     L.marker(workout.coords)
@@ -300,96 +303,147 @@ class App {
     //object coming from loc sto will lose its prototype chain
     //workout.click();
   }
-  _setLocalStorage() {
-    localStorage.setItem('workouts', JSON.stringify(this.#workouts));
-  }
-  _getLocalStorage() {
-    const data = JSON.parse(localStorage.getItem('workouts'));
-
-    if (!data) return;
-
-    this.#workouts = data;
-    this.#workouts.forEach(el => {
-      this._renderWorkout(el);
-    });
-  }
-  reset() {
-    localStorage.removeItem('workouts');
+  _clearLocalStorage() {
+    localStorage.clear();
     location.reload();
   }
-  _deleteWorkout(event) {
+  _setLocalStorage(workout) {
+    localStorage.setItem(workout.id, JSON.stringify(workout));
+  }
+  _getLocalStorage() {
+    this.#workouts = [];
+    for (const [key, value] of Object.entries(localStorage)) {
+      this.#workouts.push(JSON.parse(value));
+    }
+    for (const workout of this.#workouts) {
+      this._renderWorkout(workout);
+    }
+  }
+  _deleteWorkoutFromLocalStorage(event) {
     const workoutEl = event.target.closest('.workout');
     if (!event.target.classList.contains('trashcan')) return;
     delete__confirmWindow.classList.remove('hidden');
     delete__Btns.forEach(el => {
       el.addEventListener('click', e => {
         if (e.target.classList.contains('delete__yes')) {
+          localStorage.removeItem(workoutEl.dataset.id);
           containerWorkouts.innerHTML = `<form class="form hidden">
-          <div class="form__row">
-            <label class="form__label">Type</label>
-            <select class="form__input form__input--type">
-              <option value="running">Running</option>
-              <option value="cycling">Cycling</option>
-            </select>
-          </div>
-          <div class="form__row">
-            <label class="form__label">Distance</label>
-            <input class="form__input form__input--distance" placeholder="km" />
-          </div>
-          <div class="form__row">
-            <label class="form__label">Duration</label>
+         <div class="form__row">
+             <label class="form__label">Type</label>
+             <select class="form__input form__input--type">
+               <option value="running">Running</option>
+               <option value="cycling">Cycling</option>
+             </select>
+           </div>
+           <div class="form__row">
+             <label class="form__label">Distance</label>
+             <input class="form__input form__input--distance" placeholder="km" />
+           </div>
+           <div class="form__row">
+             <label class="form__label">Duration</label>
+             <input
+               class="form__input form__input--duration"
+               placeholder="min"
+             />
+           </div>
+           <div class="form__row">
+             <label class="form__label">Cadence</label>
             <input
-              class="form__input form__input--duration"
-              placeholder="min"
-            />
-          </div>
-          <div class="form__row">
-            <label class="form__label">Cadence</label>
-            <input
-              class="form__input form__input--cadence"
-              placeholder="step/min"
-            />
-          </div>
-          <div class="form__row form__row--hidden">
-            <label class="form__label">Elev Gain</label>
-            <input
-              class="form__input form__input--elevation"
+               class="form__input form__input--cadence"
+               placeholder="step/min"
+             />
+           </div>
+           <div class="form__row form__row--hidden">
+             <label class="form__label">Elev Gain</label>
+             <input
+               class="form__input form__input--elevation"
               placeholder="meters"
-            />
-          </div>
-          <button class="form__btn">OK</button>
-         </form>`;
-          let deleteIndex = -1;
-          for (let index = 0; index < this.#workouts.length; index++) {
-            if (this.#workouts[index].id === workoutEl.dataset.id) {
-              this.#workouts.splice(index, 1);
-              break;
-            }
-          }
-          // this.#workouts.forEach((el, i) => {
-          //   if (el.id === workoutEl.dataset.id) {
-          //     deleteIndex = i;
-          //     console.log(deleteIndex);
-          //   }
-          // });
-          //this._clearMarkers();
-          this.#workouts.forEach(el => {
-            this._renderWorkout(el);
-            //console.log(el);
-          });
-
+             />
+           </div>
+           <button class="form__btn">OK</button>
+          </form>`;
           delete__confirmWindow.classList.add('hidden');
-
-          return;
+          this._getLocalStorage();
+          location.reload();
         }
-        if (e.target.classList.contains('delete__no')) {
-          delete__confirmWindow.classList.add('hidden');
-
-          return;
-        }
+        delete__confirmWindow.classList.add('hidden');
+        return;
       });
     });
   }
+  // _deleteWorkout(event) {
+  //   const workoutEl = event.target.closest('.workout');
+  //   if (!event.target.classList.contains('trashcan')) return;
+  //   delete__confirmWindow.classList.remove('hidden');
+  //   delete__Btns.forEach(el => {
+  //     el.addEventListener('click', e => {
+  //       if (e.target.classList.contains('delete__yes')) {
+  //         containerWorkouts.innerHTML = `<form class="form hidden">
+  //         <div class="form__row">
+  //           <label class="form__label">Type</label>
+  //           <select class="form__input form__input--type">
+  //             <option value="running">Running</option>
+  //             <option value="cycling">Cycling</option>
+  //           </select>
+  //         </div>
+  //         <div class="form__row">
+  //           <label class="form__label">Distance</label>
+  //           <input class="form__input form__input--distance" placeholder="km" />
+  //         </div>
+  //         <div class="form__row">
+  //           <label class="form__label">Duration</label>
+  //           <input
+  //             class="form__input form__input--duration"
+  //             placeholder="min"
+  //           />
+  //         </div>
+  //         <div class="form__row">
+  //           <label class="form__label">Cadence</label>
+  //           <input
+  //             class="form__input form__input--cadence"
+  //             placeholder="step/min"
+  //           />
+  //         </div>
+  //         <div class="form__row form__row--hidden">
+  //           <label class="form__label">Elev Gain</label>
+  //           <input
+  //             class="form__input form__input--elevation"
+  //             placeholder="meters"
+  //           />
+  //         </div>
+  //         <button class="form__btn">OK</button>
+  //        </form>`;
+  //         let deleteIndex = -1;
+  //         for (let index = 0; index < this.#workouts.length; index++) {
+  //           if (this.#workouts[index].id === workoutEl.dataset.id) {
+  //             this.#workouts.splice(index, 1);
+  //             break;
+  //           }
+  //         }
+  //         // this.#workouts.forEach((el, i) => {
+  //         //   if (el.id === workoutEl.dataset.id) {
+  //         //     deleteIndex = i;
+  //         //     console.log(deleteIndex);
+  //         //   }
+  //         // });
+  //         //this._clearMarkers();
+  //         this.#workouts.forEach(el => {
+  //           this._renderWorkout(el);
+  //           //console.log(el);
+  //         });
+
+  //         delete__confirmWindow.classList.add('hidden');
+
+  //         return;
+  //       }
+  //       if (e.target.classList.contains('delete__no')) {
+  //         delete__confirmWindow.classList.add('hidden');
+
+  //         return;
+  //       }
+  //     });
+  //   });
+  //}
 }
 
 const app = new App();
