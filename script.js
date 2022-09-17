@@ -10,6 +10,8 @@ const inputCadence = document.querySelector('.form__input--cadence');
 const inputElevation = document.querySelector('.form__input--elevation');
 const delete__confirmWindow = document.querySelector('.delete__confirm');
 const delete__Btns = document.querySelectorAll('.delete__options-btn');
+const delete__all = document.querySelector('.delete_all');
+
 const uid = function () {
   return Date.now().toString(36) + Math.random().toString(36).substr(2);
 };
@@ -98,6 +100,7 @@ class App {
       'click',
       this._deleteWorkoutFromLocalStorage.bind(this)
     );
+    delete__all.addEventListener('click', this._clearLocalStorage);
   }
 
   _getPosition() {

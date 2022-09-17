@@ -52,7 +52,6 @@ a:visited {
 .logo {
   height: 5.2rem;
   align-self: center;
-  margin-bottom: 4rem;
 }
 
 .workouts {
@@ -281,7 +280,20 @@ a:visited {
   background-color: #e94654;
   transition: all 0.5s;
 }
-
+.sidebar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+.delete_all {
+  cursor: pointer;
+  border-radius: 50%;
+}
+.delete_all:hover {
+  background-color: rgba(255, 102, 47, 0.881);
+  transition: all 0.5s;
+}
 @keyframes fadeIn {
   from {
     opacity: 0;
